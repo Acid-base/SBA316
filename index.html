@@ -4,16 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>To-Do List</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="container">
   <h1>To-Do List</h1>
   <form id="form">
+      <div class="input-group">
     <label for="task">Task:</label>
-    <input type="text" id="task" name="task" required />
-    <input type="submit" value="Add" />
+    <input type="text" id="task" name="task" required minlength="3" maxlength="50" />
+      </div>
+      <span id="taskError" class="error"></span> 
+      <button type="submit" class="add-button">Add</button>
   </form>
   <ul id="list"></ul>
-
+  </div> 
   <script src="script.js"></script>
 </body>
 </html>

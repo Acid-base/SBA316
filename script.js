@@ -1,41 +1,121 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // DOMContentLoaded event ensures that the DOM is fully loaded before executing JavaScript
-  
-    const form = document.getElementById("form"); // Cache the form element
-    const list = document.getElementById("list"); // Cache the list element
-  
-    // Event listener for form submission
-    form.addEventListener("submit", function(e) {
-      e.preventDefault(); // Prevent default form submission
-  
-      const taskInput = document.getElementById("task"); // Get task input element
-      const task = taskInput.value.trim(); // Get trimmed task value
-  
-      const tasks = list.querySelectorAll("li"); // Get all existing tasks
-      let taskExists = false;
-      tasks.forEach(function(existingTask) { // Check if the task already exists
-        if (existingTask.textContent.trim() === task) {
-          taskExists = true;
-        }
-      });
-  
-      if (!taskExists && task !== "") { // If task doesn't exist and input is not empty
-        const li = document.createElement("li"); // Create a new list item
-        li.textContent = task; // Set text content of the list item
-        list.appendChild(li); // Append the new list item to the list
-        taskInput.value = ""; // Clear the input field
-      } else {
-        alert("Task already exists or input is empty!"); // Alert user if task already exists or input is empty
-      }
-    });
-  
-    // Event listener for list item removal
-    list.addEventListener("click", function(e) {
-      if (e.target.tagName === "LI") { // Check if clicked element is a list item
-        e.target.remove(); // Remove the clicked list item
-                }
-            }
-        );
+  const form = document.getElementById("form");
+  const list = document.getElementById("list");
+  const taskInput = document.getElementById("task");
+  const taskError = document.getElementById("taskError");
+
+  // Load tasks from localStorage on page load
+  loadTasks();
+
+  // Event listener for form submission
+form.addEventListener("submit", function (e) {
+  // Prevent default form submission (page reload)
+  e.preventDefault();
+
+    const task = taskInput.value.trim();
+
+  if (task === "") {
+    taskError.textContent = "Task cannot be empty";
+    return;
+  } else if (task.length < 3) {
+    taskError.textContent = "Task should be at least 3 characters long";
+    return;
+  } else if (task.length > 50) {
+    taskError.textContent = "Task should not exceed 50 characters";
+    return;
+  } else {
+    taskError.textContent = "";
+  }
+
+  addTask(task);
+});
+
+// Function to add a new task
+function addTask(task) {
+  const tasks = list.querySelectorAll("li");
+  let taskExists = false;
+
+  tasks.forEach(function(existingTask) {
+    if (existingTask.firstChild.textContent.trim() === task) {
+      taskExists = true;
     }
-);
-  
+  });
+
+  if (!taskExists) {
+  const li = document.createElement("li");
+    
+    // Correctly append the text node to the li element:
+    li.appendChild(document.createTextNode(task)); 
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-button");
+  li.appendChild(deleteBtn);
+
+    list.appendChild(li);
+    taskInput.value = "";
+    taskInput.focus();
+
+    saveTasks();
+  } else {
+    alert("Task already exists!");
+  }
+}
+
+// Event delegation for delete buttons
+list.addEventListener("click", function (e) {
+  if (e.target.classList.contains("delete-button")) {
+    const listItem = e.target.parentElement;
+    listItem.remove();
+checkScreenSize();
+
+    // Save tasks to localStorage after deletion
+    saveTasks();
+  }
+});
+
+// Function to save tasks to localStorage
+function saveTasks() {
+  const tasks = [];
+  const listItems = list.querySelectorAll("li");
+
+  listItems.forEach(function (item) {
+    // Access the text node directly, skipping the button
+    tasks.push(item.childNodes[0].textContent.trim()); 
+  });
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+// Function to load tasks from localStorage
+function loadTasks() {
+  const storedTasks = localStorage.getItem("tasks");
+  if (storedTasks) {
+    JSON.parse(storedTasks).forEach((task) => {
+      addTask(task); // Use addTask to add the loaded tasks
+    });
+  }
+};
+
+// Function to create a new task element
+const createTaskElement = (task) => {
+  const li = document.createElement("li");
+
+  // Create a text node for the task text
+  const taskTextNode = document.createTextNode(task);
+  li.appendChild(taskTextNode);
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-button");
+  li.appendChild(deleteBtn);
+
+  return li;
+};
+
+// Responsive design function
+function checkScreenSize() {
+  const windowWidth = window.innerWidth;
+  const listContainer = document.querySelector(".container");
+
+  listContainer.classList.toggle("tablet-layout", windowWidth <= 768);
+};
+
+// Initial call on page load
+checkScreenSize();
