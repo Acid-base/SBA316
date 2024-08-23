@@ -1,7 +1,7 @@
 /* Basic Styling */
 body {
   font-family: 'Open Sans', sans-serif;
-  background-color: #F0F0F0; 
+  background-color: #F0F0F0;
   color: #212121;
   display: flex;
   justify-content: center;
@@ -12,8 +12,7 @@ body {
 
 /* Container */
   .container {
-  /* ...other styles... */
-  background: linear-gradient(to bottom, #f9f9f9, #e0f2fd); /* Light gray to light blue */
+  background: linear-gradient(to bottom, #f9f9f9, #e0f2fd);
   border-radius: 8px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   padding: 30px;
@@ -23,7 +22,7 @@ body {
 
 h1 {
   text-align: center;
-  color: #3f51b5; /* Indigo 500 */
+  color: #3f51b5;
   margin-bottom: 20px;
   }
 
@@ -51,9 +50,9 @@ input[type="text"] {
   background-color: #f9f9f9;
 }
 
-/* Add Button */
-.add-button {
-  background-color: #F44336; /* Bold red */
+/* Button Styling */
+.button {
+  background-color: #F44336;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -62,8 +61,8 @@ input[type="text"] {
   transition: background-color 0.3s;
 }
 
-.add-button:hover {
-  background-color: #D32F2F; /* Darker red on hover */
+.button:hover {
+  background-color: #D32F2F;
 }
 
 /* List Styling */
@@ -72,43 +71,35 @@ input[type="text"] {
   padding: 0;
 }
 
-/* Alternating Task Colors */
-li:nth-child(odd) {
-  background-color: #FFE0B2; /* Light orange */
-}
-
-li:nth-child(even) {
-  background-color: #B2DFDB; /* Light teal */
-}
-
+/* List Item Styling */
 li {
   display: flex;
-  align-items: center; /* Vertical alignment */
-  justify-content: space-between; /* Even spacing */
+  align-items: center;
+  justify-content: space-between;
   padding: 15px;
   border-bottom: 1px solid #eee;
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  }
 
 /* Hover Effect for List Items */
 li:hover {
-  background-color: #FFCC80; /* More vibrant orange */
-} 
+  background-color: #FFCC80;
+  }
 
-/* Delete Button */
+/* Delete Button Styling */
 .delete-button {
-  background-color: #4CAF50; /* Bright green */
+  background-color: #4CAF50;
   color: white;
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
-}
+  }
 
 .delete-button:hover {
-  background-color: #388E3C; /* Darker green on hover */
+  background-color: #388E3C;
 }
 
 /* Error Styling */
@@ -121,20 +112,42 @@ li:hover {
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
-    max-width: 90%; 
+    max-width: 90%;
   }
 
   .tablet-layout #form {
-    flex-direction: row; /* Change form layout for tablets */
-    align-items: center; 
+    flex-direction: row;
+    align-items: center;
   }
 
   .tablet-layout .input-group {
-    margin-right: 10px; /* Add spacing between input and button */
-    flex-grow: 1; /* Input takes up available space */
+    margin-right: 10px;
+    flex-grow: 1;
   }
 
-  .tablet-layout .add-button {
-    flex-shrink: 0; /* Button doesn't shrink */
+  .tablet-layout .button {
+    flex-shrink: 0;
   }
+}
+
+/* Completed Task Styling */
+li.completed {
+  text-decoration: line-through;
+  color: #777;
+}
+
+/* Rank Indicator Styling */
+.rank-indicator {
+  font-size: 12px;
+  color: #999;
+  margin-right: 10px;
+}
+
+/* Alternating Task Colors */
+li:nth-child(odd) {
+  background-color: #FFE0B2;
+}
+
+li:nth-child(even) {
+  background-color: #B2DFDB;
 }
