@@ -1,8 +1,8 @@
 /* Basic Styling */
 body {
-  font-family: 'Open Sans', sans-serif; /* Set the font for the entire page */
-  background-color: #F0F0F0; /* Light gray background */
-  color: #212121; /* Dark gray text color */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Set the font for the entire page */
+  background-color: #f0f0f0; /* Light gray background */
+  color: #333; /* Dark gray text color */
   display: flex; /* Use flexbox for layout */
   justify-content: center; /* Center content horizontally */
   align-items: center; /* Center content vertically */
@@ -12,17 +12,17 @@ body {
 
 /* Container */
 .container {
-  background: linear-gradient(to bottom, #f9f9f9, #e0f2fd); /* Light gray to light blue gradient */
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  background-color: #fff; /* White background */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
   padding: 30px; /* Padding around the content */
-  max-width: 500px; /* Maximum width of the container */
+  max-width: 600px; /* Maximum width of the container */
   width: 100%; /* Take up full width of the parent element */
 }
 
 h1 {
   text-align: center; /* Center the heading text */
-  color: #3f51b5; /* Indigo color for the heading */
+  color: #333; /* Dark gray color for the heading */
   margin-bottom: 20px; /* Margin below the heading */
 }
 
@@ -39,36 +39,39 @@ h1 {
 label {
   display: block; /* Make labels occupy the full width */
   margin-bottom: 5px; /* Margin below each label */
+  font-weight: bold;
 }
 
-input[type="text"] {
-  width: 100%; /* Input field takes up full width */
+input[type="text"],
+input[type="radio"] {
   padding: 10px; /* Padding inside the input field */
-  border: 2px solid #2196F3; /* Blue border */
-  border-radius: 4px; /* Rounded corners */
+  border: 1px solid #ddd; /* Light gray border */
+  border-radius: 5px; /* Rounded corners */
   box-sizing: border-box; /* Include padding and border in the width */
-  background-color: #f9f9f9; /* Light gray background */
+  margin-bottom: 10px;
 }
 
 /* Button Styling */
-.button {
-  background-color: #F44336; /* Red background */
+button {
+  background-color: #007bff; /* Blue background */
   color: white; /* White text color */
-  padding: 10px 20px; /* Padding inside the button */
+  padding: 12px 20px; /* Padding inside the button */
   border: none; /* Remove default border */
-  border-radius: 4px; /* Rounded corners */
+  border-radius: 5px; /* Rounded corners */
   cursor: pointer; /* Change cursor to a pointer on hover */
   transition: background-color 0.3s; /* Smooth background color transition */
+  font-weight: bold;
 }
 
-.button:hover {
-  background-color: #D32F2F; /* Darker red on hover */
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
 }
 
 /* List Styling */
 #list {
   list-style: none; /* Remove default list markers */
   padding: 0; /* Remove default list padding */
+  margin: 0;
 }
 
 /* List Item Styling */
@@ -79,34 +82,75 @@ li {
   padding: 15px; /* Padding inside the list item */
   border-bottom: 1px solid #eee; /* Thin border below each list item */
   background-color: #fff; /* White background */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin-bottom: 5px;
 }
 
 /* Hover Effect for List Items */
 li:hover {
-  background-color: #FFCC80; /* Orange background on hover */
+  background-color: #f5f5f5; /* Light gray background on hover */
 }
 
 /* Delete Button Styling */
 .delete-button {
-  background-color: #4CAF50; /* Green background */
+  background-color: #dc3545; /* Red background */
   color: white; /* White text color */
   padding: 8px 12px; /* Padding inside the button */
   border: none; /* Remove default border */
-  border-radius: 4px; /* Rounded corners */
+  border-radius: 5px; /* Rounded corners */
   cursor: pointer; /* Change cursor to a pointer on hover */
   transition: background-color 0.3s; /* Smooth background color transition */
 }
 
 .delete-button:hover {
-  background-color: #388E3C; /* Darker green on hover */
+  background-color: #c82333; /* Darker red on hover */
 }
 
 /* Error Styling */
 .error {
-  color: red; /* Red text color for error messages */
-  font-size: 12px; /* Smaller font size for error messages */
+  color: #dc3545; /* Red text color for error messages */
+  font-size: 14px; /* Smaller font size for error messages */
   margin-bottom: 10px; /* Margin below error messages */
+}
+
+/* Priority Indicator Styling */
+.priority-indicator {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 3px;
+}
+
+.priority-indicator[data-priority="1"] {
+  background-color: #4CAF50; /* Green for low */
+  color: white;
+}
+
+.priority-indicator[data-priority="2"] {
+  background-color: #FFC107; /* Yellow for medium */
+  color: white;
+}
+
+.priority-indicator[data-priority="3"] {
+  background-color: #F44336; /* Red for high */
+  color: white;
+}
+
+/* Rank Indicator Styling */
+.rank-indicator {
+  font-size: 12px;
+  color: #777;
+  margin-right: 10px;
+}
+
+
+/* Filter/Search Section */
+#filter,
+#search {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
 }
 
 /* Responsive Design */
@@ -116,18 +160,13 @@ li:hover {
     max-width: 90%; /* Adjust container width for smaller screens */
   }
 
-  .tablet-layout #form {
-    flex-direction: row; /* Arrange form elements horizontally */
-    align-items: center; /* Vertically align form elements */
+  #form {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .tablet-layout .input-group {
-    margin-right: 10px; /* Add margin to the right of input groups */
-    flex-grow: 1; /* Allow input groups to take up available space */
-  }
-
-  .tablet-layout .button {
-    flex-shrink: 0; /* Prevent the button from shrinking */
+  .input-group {
+    margin-right: 0;
   }
 }
 
@@ -137,18 +176,11 @@ li.completed {
   color: #777; /* Gray out completed tasks */
 }
 
-/* Rank Indicator Styling */
-.rank-indicator {
-  font-size: 12px; /* Smaller font size for rank indicator */
-  color: #999; /* Gray color for rank indicator */
-  margin-right: 10px; /* Margin to the right of rank indicator */
-}
-
 /* Alternating Task Colors */
 li:nth-child(odd) {
-  background-color: #FFE0B2; /* Light orange background for odd list items */
+  background-color: #f9f9f9; /* Light gray background for odd list items */
 }
 
 li:nth-child(even) {
-  background-color: #B2DFDB; /* Light teal background for even list items */
+  background-color: #fafafa; /* Lighter gray background for even list items */
 }
