@@ -204,3 +204,37 @@ li:nth-child(odd) {
 li:nth-child(even) {
   background-color: #fafafa; /* Lighter gray background for even list items */
 }
+
+/* List Item Styling */
+li {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  background-color: #fff;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+
+/* Task Content (within li) */
+.task-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-right: 10px; /* Added margin to separate content from buttons */
+}
+
+.task-text {
+  flex-grow: 1;
+}
+
+
+.task-buttons {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Added gap to space buttons */
+}
+
+.task-buttons button {
+  /* margin-left: 5px; */ /* Removed, using gap for spacing */
+}
