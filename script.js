@@ -24,6 +24,12 @@ const createTaskElement = (task, category, completed = false, rank = 0) => {
   rankSpan.textContent = rank + 1; // Display rank starting from 1
   li.appendChild(rankSpan);
 
+  // Create the edit button
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.classList.add("edit-button");
+  li.appendChild(editBtn);
+
   // Create the delete button
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "Delete";
@@ -84,6 +90,21 @@ const addTask = (task, category) => {
   setTasksToLocalStorage(updatedTasks); // Save the updated tasks to local storage
   renderTasks(); // Re-render the task list
 };
+
+// Function to handle editing a task
+const handleEditTask = (taskElement) => {
+  const tasks = getTasksFromLocalStorage();
+  const taskIndex = Array.from(list.children).indexOf(taskElement);
+  const currentTask = tasks[taskIndex];
+
+  const newTaskText = prompt("Edit task:", currentTask.task);
+  if (newTaskText !== null) {
+    tasks[taskIndex].task = newTaskText;
+    setTasksToLocalStorage(tasks);
+    renderTasks();
+  }
+};
+
 
 // Function to handle deleting a task
 const handleDeleteTask = (taskElement) => {
@@ -156,6 +177,9 @@ const renderTasks = () => {
     const completeBtn = li.querySelector(".complete-button");
     completeBtn.addEventListener("click", () => handleCompleteTask(li));
 
+    const editBtn = li.querySelector(".edit-button");
+    editBtn.addEventListener("click", () => handleEditTask(li));
+
     list.appendChild(li); // Add the task item to the list
   });
 };
@@ -191,4 +215,3 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", handleFormSubmit);
   renderTasks();
 });
-
