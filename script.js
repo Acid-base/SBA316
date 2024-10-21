@@ -3,15 +3,18 @@ const list = document.getElementById("list");
 const taskInput = document.getElementById("task");
 const categoryInput = document.getElementById("category");
 const taskError = document.getElementById("taskError");
+const filterInput = document.getElementById("filter");
+const searchInput = document.getElementById("search");
 
 let draggedTask = null; // For drag and drop
 
 // Function to create a task list item element
-const createTaskElement = (task, category, completed = false, rank = 0) => {
+const createTaskElement = (task, category, priority, completed = false, rank = 0) => {
   const li = document.createElement("li");
   li.textContent = `${task} (${category})`;
   li.dataset.rank = rank; // Store the rank in the data attribute
   li.draggable = true; // Enable drag and drop functionality
+  li.dataset.priority = priority; // Store priority
 
   // Add the "completed" class if the task is marked as completed
   if (completed) {
@@ -23,6 +26,12 @@ const createTaskElement = (task, category, completed = false, rank = 0) => {
   rankSpan.classList.add("rank-indicator");
   rankSpan.textContent = rank + 1; // Display rank starting from 1
   li.appendChild(rankSpan);
+
+  // Add priority indicator
+  const prioritySpan = document.createElement("span");
+  prioritySpan.classList.add("priority-indicator");
+  prioritySpan.textContent = priority;
+  li.appendChild(prioritySpan);
 
   // Create the edit button
   const editBtn = document.createElement("button");
@@ -72,7 +81,7 @@ const setTasksToLocalStorage = (tasks) =>
   localStorage.setItem("tasks", JSON.stringify(tasks));
 
 // Function to add a new task
-const addTask = (task, category) => {
+const addTask = (task, category, priority) => {
   const tasks = getTasksFromLocalStorage(); // Get tasks from local storage
   const duplicatedTask = tasks.find(
     (t) => t.task === task && t.category === category // Check for duplicates
@@ -84,7 +93,7 @@ const addTask = (task, category) => {
   }
 
   // Create a new task object with a unique rank
-  const newTask = { task, category, completed: false, rank: tasks.length };
+  const newTask = { task, category, priority, completed: false, rank: tasks.length };
   const updatedTasks = [...tasks, newTask]; // Add the new task to the array
 
   setTasksToLocalStorage(updatedTasks); // Save the updated tasks to local storage
@@ -159,28 +168,45 @@ const handleClearAllClick = () => {
 // Function to render the task list
 const renderTasks = () => {
   const tasks = getTasksFromLocalStorage();
-  tasks.sort((a, b) => a.rank - b.rank); // Sort tasks by rank
+  const filterText = filterInput.value.toLowerCase();
+  const searchText = searchInput.value.toLowerCase();
+
+  tasks.sort((a, b) => {
+    // Sort by priority then rank
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
+    }
+    return a.rank - b.rank;
+  });
+
 
   list.innerHTML = ""; // Clear the existing task list
   tasks.forEach((task) => {
-    const li = createTaskElement(
-      task.task,
-      task.category,
-      task.completed,
-      task.rank
-    );
+    // Apply filters
+    if (
+      (filterText === "" || task.category.toLowerCase() === filterText) &&
+      (searchText === "" || task.task.toLowerCase().includes(searchText))
+    ) {
+      const li = createTaskElement(
+        task.task,
+        task.category,
+        task.priority,
+        task.completed,
+        task.rank
+      );
 
-    // Add event listeners for delete and complete buttons
-    const deleteBtn = li.querySelector(".delete-button");
-    deleteBtn.addEventListener("click", () => handleDeleteTask(li));
+      // Add event listeners for delete and complete buttons
+      const deleteBtn = li.querySelector(".delete-button");
+      deleteBtn.addEventListener("click", () => handleDeleteTask(li));
 
-    const completeBtn = li.querySelector(".complete-button");
-    completeBtn.addEventListener("click", () => handleCompleteTask(li));
+      const completeBtn = li.querySelector(".complete-button");
+      completeBtn.addEventListener("click", () => handleCompleteTask(li));
 
-    const editBtn = li.querySelector(".edit-button");
-    editBtn.addEventListener("click", () => handleEditTask(li));
+      const editBtn = li.querySelector(".edit-button");
+      editBtn.addEventListener("click", () => handleEditTask(li));
 
-    list.appendChild(li); // Add the task item to the list
+      list.appendChild(li); // Add the task item to the list
+    }
   });
 };
 
@@ -189,6 +215,7 @@ const handleFormSubmit = (e) => {
   e.preventDefault();
   const task = taskInput.value.trim();
   const category = categoryInput.value.trim() || "General";
+  const priority = document.querySelector('input[name="priority"]:checked').value;
 
   if (task === "") {
     taskError.textContent = "Task cannot be empty";
@@ -201,7 +228,7 @@ const handleFormSubmit = (e) => {
     return;
   } else {
     taskError.textContent = "";
-    addTask(task, category);
+    addTask(task, category, priority);
     taskInput.value = "";
     categoryInput.value = "";
     taskInput.focus();
@@ -213,5 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const clearAllButton = document.getElementById("clearAll");
   clearAllButton.addEventListener("click", handleClearAllClick);
   form.addEventListener("submit", handleFormSubmit);
+  filterInput.addEventListener("input", renderTasks);
+  searchInput.addEventListener("input", renderTasks);
   renderTasks();
 });
