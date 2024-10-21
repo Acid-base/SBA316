@@ -76,9 +76,6 @@ button:hover {
 
 /* List Item Styling */
 li {
-  display: flex; /* Use flexbox for list item layout */
-  align-items: center; /* Vertically align items in the list item */
-  justify-content: space-between; /* Evenly distribute space between items */
   padding: 15px; /* Padding inside the list item */
   border-bottom: 1px solid #eee; /* Thin border below each list item */
   background-color: #fff; /* White background */
@@ -89,6 +86,29 @@ li {
 li:hover {
   background-color: #f5f5f5; /* Light gray background on hover */
 }
+
+/* Task Content (within li) */
+.task-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.task-text {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+
+.task-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.task-buttons button {
+  margin-left: 5px;
+}
+
 
 /* Delete Button Styling */
 .delete-button {
