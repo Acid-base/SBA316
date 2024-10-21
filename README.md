@@ -1,38 +1,246 @@
+const form = document.getElementById("form");
+const list = document.getElementById("list");
+const taskInput = document.getElementById("task");
+const categoryInput = document.getElementById("category");
+const taskError = document.getElementById("taskError");
+const filterInput = document.getElementById("filter");
+const searchInput = document.getElementById("search");
 
-To-Do List App
-This is a simple to-do list application built with HTML, CSS, and JavaScript. It allows users to create, delete, complete, and reorder tasks. Tasks are stored in the browser's local storage, so they persist even after the browser is closed.
+let draggedTask = null; // For drag and drop
 
-Features
-Add Tasks: Users can add new tasks with a description and category.
-Delete Tasks: Users can delete tasks by clicking the "Delete" button next to each task.
-Mark Tasks as Complete: Users can mark tasks as complete by clicking the "Complete" button. Completed tasks are visually indicated with a line-through.
-Reorder Tasks: Users can reorder tasks by dragging and dropping them.
-Clear All Tasks: Users can clear all tasks from the list.
-Local Storage: Tasks are stored in the browser's local storage, so they persist even after the browser is closed.
-Getting Started
-Clone the repository:
-git clone <https://github.com/your-username/to-do-list.git>
-Open the index.html file in your browser.
-Technologies Used
-HTML: For structuring the web page.
-CSS: For styling the web page.
-JavaScript: For handling user interactions and data manipulation.
-Local Storage: For storing task data persistently.
-Development Challenges
-During development, we encountered a few challenges:
+// Function to create a task list item element
+const createTaskElement = (task, category, priority, completed = false, rank = 0) => {
+  const li = document.createElement("li");
+  li.textContent = `${task} (${category})`;
+  li.dataset.rank = rank; // Store the rank in the data attribute
+  li.draggable = true; // Enable drag and drop functionality
+  li.dataset.priority = priority; // Store priority
 
-Flash of Unstyled Content (FOUC): The browser would render the page before the stylesheet was fully loaded, resulting in a brief moment of unstyled content. We resolved this by ensuring the stylesheet was loaded in the <head> section of the HTML file.
-Source Map Errors: We encountered errors related to source maps, which are used for debugging. These errors were not critical to the application's functionality and were resolved by ensuring source maps were correctly configured in our development tools.
-DOMTokenList.add Error: We encountered an error when trying to add a class to a DOM element. This was due to an issue with how we were handling the category of tasks when loading them from local storage. We fixed this by ensuring that a default category was always provided if the category was missing.
-Drag and Drop Implementation: Implementing drag and drop functionality required careful handling of event listeners and updating the task order in local storage. We had to ensure that the task order was consistent across the DOM and the local storage data.
-Future Improvements
-Add Task Editing: Allow users to edit existing tasks.
-Filter Tasks: Implement filtering options to view tasks by category or completion status.
-Search Functionality: Add a search bar to quickly find specific tasks.
-Date/Time Tracking: Allow users to set deadlines or due dates for tasks.
-Notifications: Implement notifications to remind users about upcoming deadlines.
-Contributing
-Contributions are welcome! Feel free to fork the repository and submit pull requests for any improvements or new features.
+  // Add the "completed" class if the task is marked as completed
+  if (completed) {
+    li.classList.add("completed");
+  }
 
-License
-This project is licensed under the MIT License - see the LICENSE file for details.
+  // Add a visual indicator for the task's rank
+  const rankSpan = document.createElement("span");
+  rankSpan.classList.add("rank-indicator");
+  rankSpan.textContent = rank + 1; // Display rank starting from 1
+  li.appendChild(rankSpan);
+
+  // Add priority indicator
+  const prioritySpan = document.createElement("span");
+  prioritySpan.classList.add("priority-indicator");
+  prioritySpan.textContent = priority;
+  li.appendChild(prioritySpan);
+
+  // Create the edit button
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.classList.add("edit-button");
+  li.appendChild(editBtn);
+
+  // Create the delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-button");
+  li.appendChild(deleteBtn);
+
+  // Create the complete/undo button
+  const completeBtn = document.createElement("button");
+  completeBtn.textContent = completed ? "Undo" : "Complete";
+  completeBtn.classList.add("complete-button");
+  li.appendChild(completeBtn);
+
+  // Event listeners for drag and drop
+  li.addEventListener("dragstart", (event) => {
+    draggedTask = event.target; // Store the dragged task element
+  });
+
+  li.addEventListener("dragover", (event) => {
+    event.preventDefault(); // Necessary to allow dropping on the element
+  });
+
+  li.addEventListener("drop", (event) => {
+    event.preventDefault();
+    const targetTask = event.target.closest("li"); // Find the closest list item to the drop location
+    if (targetTask && draggedTask) {
+      handleMoveTask(draggedTask, targetTask); // Handle the task move
+    }
+    draggedTask = null; // Reset the dragged task
+  });
+
+  return li;
+};
+
+// Get tasks from local storage
+const getTasksFromLocalStorage = () =>
+  JSON.parse(localStorage.getItem("tasks") || "[]");
+
+// Save tasks to local storage
+const setTasksToLocalStorage = (tasks) =>
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+
+// Function to add a new task
+const addTask = (task, category, priority) => {
+  const tasks = getTasksFromLocalStorage(); // Get tasks from local storage
+  const duplicatedTask = tasks.find(
+    (t) => t.task === task && t.category === category // Check for duplicates
+  );
+
+  if (duplicatedTask) {
+    alert("Task already exists!");
+    return;
+  }
+
+  // Create a new task object with a unique rank
+  const newTask = { task, category, priority, completed: false, rank: tasks.length };
+  const updatedTasks = [...tasks, newTask]; // Add the new task to the array
+
+  setTasksToLocalStorage(updatedTasks); // Save the updated tasks to local storage
+  renderTasks(); // Re-render the task list
+};
+
+// Function to handle editing a task
+const handleEditTask = (taskElement) => {
+  const tasks = getTasksFromLocalStorage();
+  const taskIndex = Array.from(list.children).indexOf(taskElement);
+  const currentTask = tasks[taskIndex];
+
+  const newTaskText = prompt("Edit task:", currentTask.task);
+  if (newTaskText !== null) {
+    tasks[taskIndex].task = newTaskText;
+    setTasksToLocalStorage(tasks);
+    renderTasks();
+  }
+};
+
+
+// Function to handle deleting a task
+const handleDeleteTask = (taskElement) => {
+  const tasks = getTasksFromLocalStorage();
+  const taskIndex = Array.from(list.children).indexOf(taskElement); // Get the index of the task to delete
+  const updatedTasks = tasks.filter((_, i) => i !== taskIndex); // Remove the task from the array
+
+  setTasksToLocalStorage(updatedTasks); // Save the updated tasks to local storage
+  renderTasks(); // Re-render the task list
+};
+
+// Function to handle marking a task as complete/incomplete
+const handleCompleteTask = (taskElement) => {
+  const tasks = getTasksFromLocalStorage();
+  const taskIndex = Array.from(list.children).indexOf(taskElement); // Get the index of the task
+
+  // Toggle the completed status of the task
+  tasks[taskIndex].completed = !tasks[taskIndex].completed;
+
+  setTasksToLocalStorage(tasks); // Save the updated tasks to local storage
+  renderTasks(); // Re-render the task list
+};
+
+// Function to handle moving a task
+const handleMoveTask = (draggedTask, targetTask) => {
+  const tasks = getTasksFromLocalStorage();
+  const draggedIndex = Array.from(list.children).indexOf(draggedTask); // Get the index of the dragged task
+  const targetIndex = Array.from(list.children).indexOf(targetTask); // Get the index of the target task
+
+  // Swap the tasks in the array
+  const temp = tasks[draggedIndex];
+  tasks[draggedIndex] = tasks[targetIndex];
+  tasks[targetIndex] = temp;
+
+  // Update the ranks of all tasks after the move
+  tasks.forEach((task, index) => {
+    task.rank = index;
+  });
+
+  setTasksToLocalStorage(tasks); // Save the updated tasks to local storage
+  renderTasks(); // Re-render the task list
+};
+
+// Function to handle clearing all tasks
+const handleClearAllClick = () => {
+  if (confirm("Are you sure you want to clear all tasks?")) {
+    localStorage.removeItem("tasks"); // Remove tasks from local storage
+    renderTasks(); // Re-render the task list
+  }
+};
+
+// Function to render the task list
+const renderTasks = () => {
+  const tasks = getTasksFromLocalStorage();
+  const filterText = filterInput.value.toLowerCase();
+  const searchText = searchInput.value.toLowerCase();
+
+  tasks.sort((a, b) => {
+    // Sort by priority then rank
+    if (a.priority !== b.priority) {
+      return a.priority - b.priority;
+    }
+    return a.rank - b.rank;
+  });
+
+
+  list.innerHTML = ""; // Clear the existing task list
+  tasks.forEach((task) => {
+    // Apply filters
+    if (
+      (filterText === "" || task.category.toLowerCase() === filterText) &&
+      (searchText === "" || task.task.toLowerCase().includes(searchText))
+    ) {
+      const li = createTaskElement(
+        task.task,
+        task.category,
+        task.priority,
+        task.completed,
+        task.rank
+      );
+
+      // Add event listeners for delete and complete buttons
+      const deleteBtn = li.querySelector(".delete-button");
+      deleteBtn.addEventListener("click", () => handleDeleteTask(li));
+
+      const completeBtn = li.querySelector(".complete-button");
+      completeBtn.addEventListener("click", () => handleCompleteTask(li));
+
+      const editBtn = li.querySelector(".edit-button");
+      editBtn.addEventListener("click", () => handleEditTask(li));
+
+      list.appendChild(li); // Add the task item to the list
+    }
+  });
+};
+
+// Function to handle form submission
+const handleFormSubmit = (e) => {
+  e.preventDefault();
+  const task = taskInput.value.trim();
+  const category = categoryInput.value.trim() || "General";
+  const priority = document.querySelector('input[name="priority"]:checked').value;
+
+  if (task === "") {
+    taskError.textContent = "Task cannot be empty";
+    return;
+  } else if (task.length < 3) {
+    taskError.textContent = "Task should be at least 3 characters long";
+    return;
+  } else if (task.length > 50) {
+    taskError.textContent = "Task should not exceed 50 characters";
+    return;
+  } else {
+    taskError.textContent = "";
+    addTask(task, category, priority);
+    taskInput.value = "";
+    categoryInput.value = "";
+    taskInput.focus();
+  }
+};
+
+// Event listener for DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  const clearAllButton = document.getElementById("clearAll");
+  clearAllButton.addEventListener("click", handleClearAllClick);
+  form.addEventListener("submit", handleFormSubmit);
+  filterInput.addEventListener("input", renderTasks);
+  searchInput.addEventListener("input", renderTasks);
+  renderTasks();
+});
