@@ -11,7 +11,57 @@ let draggedTask = null; // For drag and drop
 // Function to create a task list item element
 const createTaskElement = (task, category, priority, completed = false, rank = 0) => {
   const li = document.createElement("li");
-  li.textContent = `${task} (${category})`;
+
+  // Add the task content div
+  const taskContentDiv = document.createElement('div');
+  taskContentDiv.classList.add('task-content');
+
+  // Add task text
+  const taskText = document.createElement('span');
+  taskText.classList.add('task-text');
+  taskText.textContent = `${task} (${category})`;
+  taskContentDiv.appendChild(taskText);
+
+
+  // Add the buttons div
+  const buttonsDiv = document.createElement('div');
+  buttonsDiv.classList.add('task-buttons');
+
+  // Add priority indicator
+  const prioritySpan = document.createElement("span");
+  prioritySpan.classList.add("priority-indicator");
+  prioritySpan.textContent = priority;
+  prioritySpan.dataset.priority = priority;
+  buttonsDiv.appendChild(prioritySpan);
+
+  // Add a visual indicator for the task's rank
+  const rankSpan = document.createElement("span");
+  rankSpan.classList.add("rank-indicator");
+  rankSpan.textContent = rank + 1; // Display rank starting from 1
+  buttonsDiv.appendChild(rankSpan);
+
+
+  // Create the edit button
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.classList.add("edit-button");
+  buttonsDiv.appendChild(editBtn);
+
+  // Create the delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.classList.add("delete-button");
+  buttonsDiv.appendChild(deleteBtn);
+
+  // Create the complete/undo button
+  const completeBtn = document.createElement("button");
+  completeBtn.textContent = completed ? "Undo" : "Complete";
+  completeBtn.classList.add("complete-button");
+  buttonsDiv.appendChild(completeBtn);
+
+  li.appendChild(taskContentDiv);
+  li.appendChild(buttonsDiv);
+
   li.dataset.rank = rank; // Store the rank in the data attribute
   li.draggable = true; // Enable drag and drop functionality
   li.dataset.priority = priority; // Store priority
@@ -20,36 +70,6 @@ const createTaskElement = (task, category, priority, completed = false, rank = 0
   if (completed) {
     li.classList.add("completed");
   }
-
-  // Add a visual indicator for the task's rank
-  const rankSpan = document.createElement("span");
-  rankSpan.classList.add("rank-indicator");
-  rankSpan.textContent = rank + 1; // Display rank starting from 1
-  li.appendChild(rankSpan);
-
-  // Add priority indicator
-  const prioritySpan = document.createElement("span");
-  prioritySpan.classList.add("priority-indicator");
-  prioritySpan.textContent = priority;
-  li.appendChild(prioritySpan);
-
-  // Create the edit button
-  const editBtn = document.createElement("button");
-  editBtn.textContent = "Edit";
-  editBtn.classList.add("edit-button");
-  li.appendChild(editBtn);
-
-  // Create the delete button
-  const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "Delete";
-  deleteBtn.classList.add("delete-button");
-  li.appendChild(deleteBtn);
-
-  // Create the complete/undo button
-  const completeBtn = document.createElement("button");
-  completeBtn.textContent = completed ? "Undo" : "Complete";
-  completeBtn.classList.add("complete-button");
-  li.appendChild(completeBtn);
 
   // Event listeners for drag and drop
   li.addEventListener("dragstart", (event) => {
